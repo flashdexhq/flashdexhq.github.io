@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlashDex (FDX)</title>
+<meta name="description" content="FlashDex (FDX) is a fixed supply ERC20 token on Base. One billion FDX minted at deployment. No owner. No admin functions.">
+<meta property="og:title" content="FlashDex (FDX)">
+<meta property="og:description" content="A fixed supply ERC20 token on Base. One billion FDX. Never more.">
+<meta property="og:image" content="https://flashdexhq.github.io/logo-1024.png">
+<meta property="og:url" content="https://flashdexhq.github.io/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070403;
+    --panel: rgba(255, 46, 20, 0.03);
+    --line: rgba(255, 46, 20, 0.22);
+    --line-dim: rgba(255, 255, 255, 0.08);
+    --red: #FF2E14;
+    --red-hot: #FF6A45;
+    --red-dim: #8A2313;
+    --text: #F2ECE9;
+    --muted: #97867F;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --disp: "Chakra Petch", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background:
+      radial-gradient(700px 460px at 75% -10%, rgba(255, 46, 20, 0.14), transparent 60%)
+      var(--bg);
+    color: var(--text);
+    font: 400 0.95rem/1.7 var(--mono);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* scanlines */
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px);
+    opacity: 0.35;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; position: relative; }
+  a { color: var(--red-hot); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: #FFD9CF; }
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+  header {
+    display: flex; align-items: center; gap: 12px; padding: 28px 0;
+    border-bottom: 1px solid var(--line-dim);
+  }
+  header img { width: 34px; height: 34px; filter: drop-shadow(0 0 10px rgba(255,46,20,0.6)); }
+  .brand { font: 700 1.05rem var(--disp); letter-spacing: 0.14em; text-transform: uppercase; }
+  .brand em { font-style: normal; color: var(--red); }
+  .net { margin-left: auto; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
+  .net b { color: var(--red-hot); font-weight: 500; }
+  .net .cur { display: inline-block; width: 7px; height: 12px; background: var(--red); vertical-align: -2px; margin-left: 6px; box-shadow: 0 0 8px var(--red); }
+
+  .sys { font-size: 0.66rem; letter-spacing: 0.14em; color: var(--red-dim); text-transform: uppercase; padding: 14px 0 0; }
+  .sys b { color: var(--red-hot); font-weight: 500; }
+
+  .hero { padding: 46px 0 10px; }
+  .hero h1 {
+    font: 700 clamp(2.2rem, 6.8vw, 3.8rem)/1.05 var(--disp);
+    letter-spacing: 0.01em; text-transform: uppercase;
+  }
+  .hero h1 .glow {
+    color: var(--red);
+    text-shadow: 0 0 18px rgba(255, 46, 20, 0.65), 0 0 60px rgba(255, 46, 20, 0.3);
+  }
+  .hero p.lede { margin-top: 22px; max-width: 56ch; color: var(--muted); }
+  .hero p.lede b { color: var(--text); font-weight: 600; }
+
+  /* HUD plate with corner brackets */
+  .plate { margin: 38px 0 0; position: relative; padding: 26px 28px; background: var(--panel); }
+  .plate::before, .plate::after,
+  .plate .c::before, .plate .c::after {
+    content: ""; position: absolute; width: 16px; height: 16px;
+    border: 1px solid var(--red); filter: drop-shadow(0 0 6px rgba(255,46,20,0.5));
+  }
+  .plate::before { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+  .plate::after { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+  .plate .c::before { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+  .plate .c::after { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+  .plate .tag {
+    font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--red-hot); display: block; margin-bottom: 12px;
+  }
+  .plate code#addr {
+    font: 600 clamp(0.76rem, 2.3vw, 1rem)/1.5 var(--mono);
+    word-break: break-all; display: block; color: var(--text);
+    text-shadow: 0 0 12px rgba(255, 46, 20, 0.25);
+  }
+  .plate .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 20px; }
+  .btn {
+    font: 600 0.76rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--red); color: #0A0503; border: 0; padding: 13px 20px;
+    cursor: pointer; text-decoration: none; display: inline-block;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    box-shadow: 0 0 24px rgba(255, 46, 20, 0.35);
+  }
+  .btn:hover { background: var(--red-hot); color: #0A0503; }
+  .plate .row a.plain-link { font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .plate .warn { margin-top: 18px; font-size: 0.8rem; color: var(--muted); max-width: 60ch; }
+  .plate .warn b { color: var(--text); font-weight: 600; }
+
+  section { padding: 58px 0 0; }
+  h2 {
+    font: 700 0.8rem var(--disp); letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--red-hot); margin-bottom: 4px;
+  }
+  h2::before { content: "// "; color: var(--red-dim); }
+  .rule { border: 0; border-top: 1px solid var(--line); margin: 10px 0 20px; box-shadow: 0 0 8px rgba(255,46,20,0.25); }
+
+  .facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--line-dim); border: 1px solid var(--line-dim); }
+  .fact { background: var(--bg); padding: 16px 18px; }
+  .fact .k { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red-dim); }
+  .fact .v { margin-top: 8px; font: 700 0.95rem var(--disp); letter-spacing: 0.03em; }
+
+  .addr { border-top: 1px solid var(--line-dim); padding: 16px 0; }
+  .addr:first-of-type { border-top: 0; }
+  .addr .k { font: 700 0.78rem var(--disp); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+  .addr .k::before { content: "> "; color: var(--red); }
+  .addr .v { font-size: 0.82rem; word-break: break-all; }
+  .addr .v a { text-decoration: none; }
+  .addr .v a:hover { text-decoration: underline; }
+  .addr .note { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+  ul.plain { list-style: none; padding: 0; }
+  ul.plain li { padding: 12px 0 12px 22px; position: relative; color: var(--muted); border-top: 1px solid var(--line-dim); }
+  ul.plain li:first-child { border-top: 0; }
+  ul.plain li::before { content: "▸"; position: absolute; left: 0; color: var(--red); }
+  ul.plain li b { color: var(--text); }
+  ul.plain code { color: var(--text); font-size: 0.9em; }
+
+  footer {
+    margin-top: 72px; border-top: 1px solid var(--line-dim); padding: 28px 0 54px;
+    font-size: 0.85rem; color: var(--muted);
+  }
+  footer .fine { margin-top: 16px; max-width: 72ch; font-size: 0.74rem; line-height: 1.8; }
+  footer .eof { margin-top: 22px; font-size: 0.66rem; letter-spacing: 0.16em; color: var(--red-dim); text-transform: uppercase; }
+
+  @media (max-width: 620px) {
+    .facts { grid-template-columns: 1fr 1fr; }
+    .net { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .net .cur { animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="/logo.svg" alt="FlashDex logo" width="34" height="34">
+    <div class="brand">Flash<em>Dex</em></div>
+    <div class="net">sys.online · <b>base:8453</b><span class="cur"></span></div>
+  </header>
+
+  <main>
+    <p class="sys">contract://base.mainnet ▸ supply.locked ▸ admin.<b>null</b></p>
+
+    <div class="hero">
+      <h1>One billion FDX.<br><span class="glow">Never more.</span></h1>
+      <p class="lede">
+        FDX is a fixed supply ERC20 token on Base. All
+        <b>1,000,000,000 FDX</b> were minted in a single transaction at
+        deployment. The contract has <b>no owner and no admin functions</b>.
+        No one can mint more, pause transfers, or freeze accounts.
+      </p>
+
+      <div class="plate"><span class="c"></span>
+        <span class="tag">canonical contract // base mainnet</span>
+        <code id="addr">0x690c433b27671Bf76f482d81619Bc75827E3024c</code>
+        <div class="row">
+          <button type="button" class="btn" onclick="navigator.clipboard.writeText(document.getElementById('addr').textContent).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy address',1400)})">Copy address</button>
+          <a class="plain-link" href="https://basescan.org/token/0x690c433b27671Bf76f482d81619Bc75827E3024c">View on Basescan</a>
+        </div>
+        <p class="warn"><b>Only this address is FDX.</b> Anyone can copy the
+        name and the symbol. Verify the address before you interact.</p>
+      </div>
+    </div>
+
+    <section id="token">
+      <h2>Token facts</h2>
+      <hr class="rule">
+      <div class="facts">
+        <div class="fact"><div class="k">Standard</div><div class="v">ERC-20 + ERC-2612</div></div>
+        <div class="fact"><div class="k">Total supply</div><div class="v">1,000,000,000</div></div>
+        <div class="fact"><div class="k">Decimals</div><div class="v">18</div></div>
+        <div class="fact"><div class="k">Admin functions</div><div class="v">None</div></div>
+        <div class="fact"><div class="k">Mint or pause</div><div class="v">Impossible</div></div>
+        <div class="fact"><div class="k">Built on</div><div class="v">OpenZeppelin 5.4.0</div></div>
+      </div>
+    </section>
+
+    <section id="addresses">
+      <h2>Addresses</h2>
+      <hr class="rule">
+      <div class="addr">
+        <div class="k">Token</div>
+        <div class="v"><a href="https://basescan.org/token/0x690c433b27671Bf76f482d81619Bc75827E3024c">0x690c433b27671Bf76f482d81619Bc75827E3024c</a></div>
+        <div class="note">The canonical FDX contract. Source code verified on Basescan.</div>
+      </div>
+      <div class="addr">
+        <div class="k">Treasury</div>
+        <div class="v"><a href="https://basescan.org/address/0x6E709bE03F34EA8F4A5675F4843520C5DbA4006B">0x6E709bE03F34EA8F4A5675F4843520C5DbA4006B</a></div>
+        <div class="note">A Safe holds the full token supply.</div>
+      </div>
+      <div class="addr">
+        <div class="k">Deployer</div>
+        <div class="v"><a href="https://basescan.org/address/0x830c9A28Cbcc3AFED44AdbAA18Df915eb7BF3d11">0x830c9A28Cbcc3AFED44AdbAA18Df915eb7BF3d11</a></div>
+        <div class="note">This account deployed the contract. It holds no tokens and has no special powers.</div>
+      </div>
+    </section>
+
+    <section id="verify">
+      <h2>Verify it yourself</h2>
+      <hr class="rule">
+      <ul class="plain">
+        <li>The source code is <a href="https://basescan.org/address/0x690c433b27671Bf76f482d81619Bc75827E3024c#code">verified on Basescan</a>. It is 13 lines built on audited OpenZeppelin <code>ERC20</code> and <code>ERC20Permit</code>. There is a constructor and nothing else.</li>
+        <li>The supply is fixed by structure. The only mint happens inside the constructor. The bytecode contains no mint, burn, or upgrade path.</li>
+        <li>ERC-2612 permit allows approvals by signature. Compatible apps can approve and swap in one transaction.</li>
+        <li>Brand assets: <a href="/logo.svg" download>logo.svg</a>, <a href="/logo-256.png" download>logo 256px</a>, <a href="/logo-1024.png" download>logo 1024px</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div>Contact: <a href="mailto:flashdex.hq@gmail.com">flashdex.hq@gmail.com</a></div>
+    <p class="fine">
+      This is the official FlashDex project page. The address published here is
+      the only canonical FDX contract. FDX is a token contract with no issuer
+      controlled functions. Nothing on this page is an offer or investment
+      advice. Tokens sent to the token contract itself cannot be recovered.
+    </p>
+    <p class="eof">// end of transmission</p>
+  </footer>
+
+</div>
+</body>
+</html>
